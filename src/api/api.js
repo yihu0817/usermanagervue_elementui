@@ -14,7 +14,10 @@ export const RequestUserList = () => axios.get(`${baseUrl}/api/list`).then( res 
 /**删除用户 */
 export const RequestUserDelete = params => axios.get(`${baseUrl}/api/delete`, params).then(res => res.data);
 /**添加用户,包含头像 */
-export const RequestUserAdd = (pararms, config) => axios.post(`${baseUrl}/api/add`, pararms, config).then(res => res.data);
+export const RequestUserAdd = (pararms,config) => axios.post(`${baseUrl}/api/add2`, pararms,config).then(res => res.data);
+/**添加用户,不包含头像 */
+export const RequestUserAdd2 = (pararms) => axios.post(`${baseUrl}/api/add2`, pararms).then(res => res.data);
+
 /**查询用户 */
 export const RequestUserFind = params => axios.get(`${baseUrl}/api/find`,params).then( res => res.data);
 /**修改用户 */

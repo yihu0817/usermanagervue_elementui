@@ -9,13 +9,16 @@
       </tr>
 
       <tr v-for="(user,index) in userLists" :key="index">
-        
-        <td v-if="user.headerimg">
-          <!-- <img :src="'http://192.168.35.114:8089/'+user.headerimg" width="80px" height="80px"> -->
+        <!-- <td v-if="user.headerimg">
           <img :src="BASEURL + user.headerimg" width="80px" height="80px">
         </td>
         <td v-else>
           <img src="../../assets/images/y.jpg" width="80px" height="80px">
+        </td> -->
+        <!-- 在学习过程中，遇到不明白，先放一下，作好记录，后期遇到在处理; -->
+        <td>
+          <img v-if="user.headerimg" :src="BASEURL + user.headerimg" width="80px" height="80px"/>
+          <img v-else src="../../assets/images/y.jpg" width="80px" height="80px"/>
         </td>
 
         <td>{{user.username}}</td>

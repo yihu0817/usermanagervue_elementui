@@ -15,7 +15,7 @@ Vue.use(ElementUI);
 
 Vue.component('NavMenu', NavMenu); // 全局注册组件 <nav-menu></nav-menu>
 Vue.component('Header', Header); // 全局注册组件 <nav-menu></nav-menu>
-// Vue.prototype.$axios = axios;
+Vue.prototype.$axios = axios;
 Vue.prototype.$store = store;
 Vue.config.productionTip = false;
 

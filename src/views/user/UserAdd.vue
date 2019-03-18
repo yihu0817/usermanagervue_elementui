@@ -1,109 +1,97 @@
 <template>
-  <div>
-    <!-- <form name="formadd" @submit.prevent="userAdd" method="post" enctype="multipart/form-data"> -->
-    <table>
-      <input type="hidden" v-model="uid">
-      <tr bgcolor="#f5f5f5">
-        <td>
-          <div>
-            <font>*</font> 姓名:
-          </div>
-        </td>
-        <td>
-          <input type="text" v-model="username">
-        </td>
-      </tr>
-      <tr bgcolor="#f0f0f0">
-        <td>
-          <div>
-            <font>*</font> 密码:
-          </div>
-        </td>
-        <td>
-          <input type="password" v-model="password">
-        </td>
-      </tr>
-      <tr bgcolor="#f5f5f5">
-        <td>
-          <div>头像:</div>
-        </td>
-        <td>
-          <input type="file" @change="changeFile($event)">
-        </td>
-      </tr>
+  <div style="width:500px; border: 1px dashed #d9d9d9;padding:20px">
+    <el-form ref="form" :model="form" label-width="80px" >
+      <el-form-item label="姓名">
+        <el-input v-model="form.username"></el-input>
+      </el-form-item>
+      <el-form-item label="密码">
+         <el-input v-model="form.password" type='password'></el-input>
+      </el-form-item>
+      <el-form-item label="头像">
+          <el-upload
+            name='headerImg'
+            class="avatar-uploader"
+            action="/"
+            :show-file-list="false"
+            :before-upload="beforeAvatarUpload">
+            <img v-if="imageUrl" :src="imageUrl" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click.native.prevent="userAdd">提交</el-button>
+      </el-form-item>
+    </el-form>
 
-      <tr bgcolor="#f5f5f5">
-        <td></td>
-        <td colspan="2">
-          <button @click="userAdd">提交</button>
-        </td>
-      </tr>
-    </table>
-    <div>{{message}}</div>
-    <!-- </form> -->
   </div>
 </template>
 <script>
-import { RequestUserAdd } from "api/api.js";
+import { RequestUserAdd2,baseUrl } from "api/api.js";
 export default {
   data() {
     return {
-      uid: "",
-      username: "",
-      password: "",
-      message: "",
-      file: ""
+      form:{
+        username: "",
+        password: "",
+      },
+      file: "",
+      imageUrl: '',
+      url:'',
     };
   },
   methods: {
-    changeFile() {
-      let file = event.target.files[0];
-      this.file = file;
-    },
     userAdd() {
+      this.$refs.form.validate((valid) => {
+            if (valid) {
+                RequestUserAdd2({username:this.form.username, psw:this.form.password, imgUrl: this.url})
+                        .then(data => {
+                          if (data.resultCode === 1) {
+                            this.$message = "添加用户成功!";
+                            this.$router.push({ path: "user_list" });
+                          } else {
+                            this.$message = "添加用户失败!";
+                          }
+                        }).catch(error => {
+                          console.log(error);
+                        });
+            }
+      })
+    },
+    
+    beforeAvatarUpload(file) {
       let formData = new FormData(); // 创建Form表单对象
-      formData.append("username", this.username); // 向表单对象添加提交项,名为username,值为this.username
-      formData.append("psw", this.password);
-      formData.append("fileHeader", this.file);
-
-      // 文件上传 Content-Type": "multipart/form-data
-      let config = {
-        headers: { "Content-Type": "multipart/form-data" }
-      };
-
-      RequestUserAdd(formData, config)
-        .then(data => {
-          if (data.resultCode === 1) {
-            this.message = "添加用户成功!";
-            this.$router.push({ path: "user_list" });
-          } else {
-            this.message = "添加用户失败!";
-          }
-        }).catch(error => {
-          console.log(error);
-        });
+      formData.append("headerImg", file);
+      this.$axios.post(`${baseUrl}/api/uploadFile`,formData).then( res => {
+        this.url = res.data;
+        this.imageUrl = `${baseUrl}/${res.data}`;
+      });
     }
   }
 };
 </script>
 
 <style scoped>
-table {
-  background-color: #cccccc;
-  border: 1px;
-  width: 100%;
-}
-
-table tr {
-  height: 20px;
-  line-height: 30px;
-}
-
-table tr div {
-  text-align: right;
-}
-
-td font {
-  color: red;
-}
+ .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
 </style>
